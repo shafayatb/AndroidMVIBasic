@@ -1,7 +1,8 @@
-package com.baldystudios.androidmvibasic
+package com.baldystudios.androidmvibasic.ui.main
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.baldystudios.androidmvibasic.R
 
 class MainActivity : AppCompatActivity() {
 

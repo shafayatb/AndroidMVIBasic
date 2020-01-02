@@ -1,5 +1,6 @@
 package com.baldystudios.androidmvibasic.api
 
+import com.baldystudios.androidmvibasic.util.LiveDataCallAdapterFactory
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
@@ -12,6 +13,7 @@ object RetrofitBuilder {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(MoshiConverterFactory.create())
+            .addCallAdapterFactory(LiveDataCallAdapterFactory())
 
     }
 

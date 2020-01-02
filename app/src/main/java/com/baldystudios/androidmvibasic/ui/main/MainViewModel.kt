@@ -11,6 +11,7 @@ import com.baldystudios.androidmvibasic.ui.main.state.MainStateEvent
 import com.baldystudios.androidmvibasic.ui.main.state.MainStateEvent.*
 import com.baldystudios.androidmvibasic.ui.main.state.MainViewState
 import com.baldystudios.androidmvibasic.util.AbsentLiveData
+import com.baldystudios.androidmvibasic.util.DataState
 
 class MainViewModel : ViewModel() {
 
@@ -20,7 +21,7 @@ class MainViewModel : ViewModel() {
     val viewState: LiveData<MainViewState>
         get() = _viewState
 
-    val dataState: LiveData<MainViewState> = Transformations
+    val dataState: LiveData<DataState<MainViewState>> = Transformations
         .switchMap(_stateEvent) { stateEvent ->
 
             stateEvent?.let {
@@ -29,7 +30,7 @@ class MainViewModel : ViewModel() {
 
         }
 
-    fun handleStateEvent(stateEvent: MainStateEvent): LiveData<MainViewState> {
+    fun handleStateEvent(stateEvent: MainStateEvent): LiveData<DataState<MainViewState>> {
 
         return when (stateEvent) {
 

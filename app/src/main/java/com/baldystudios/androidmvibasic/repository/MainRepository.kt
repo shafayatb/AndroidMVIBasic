@@ -1,86 +1,62 @@
 package com.baldystudios.androidmvibasic.repository
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
 import com.baldystudios.androidmvibasic.api.RetrofitBuilder
+import com.baldystudios.androidmvibasic.model.BlogPost
+import com.baldystudios.androidmvibasic.model.User
 import com.baldystudios.androidmvibasic.ui.main.state.MainViewState
-import com.baldystudios.androidmvibasic.util.ApiEmptyResponse
-import com.baldystudios.androidmvibasic.util.ApiErrorResponse
 import com.baldystudios.androidmvibasic.util.ApiSuccessResponse
 import com.baldystudios.androidmvibasic.util.DataState
+import com.baldystudios.androidmvibasic.util.GenericApiResponse
 
 object MainRepository {
 
     fun getBlogPosts(): LiveData<DataState<MainViewState>> {
 
-        return Transformations
-            .switchMap(RetrofitBuilder.apiService.getBlogPosts()) { apiResponse ->
+        return object : NetworkBoundResource<List<BlogPost>, MainViewState>() {
 
-                object : LiveData<DataState<MainViewState>>() {
-                    override fun onActive() {
-                        super.onActive()
-                        when (apiResponse) {
+            override fun handleApiSuccessResponse(response: ApiSuccessResponse<List<BlogPost>>) {
 
-                            is ApiSuccessResponse -> {
-                                value = DataState.data(
-                                    data = MainViewState(
-                                        blogPosts = apiResponse.body
-                                    )
-                                )
-                            }
+                result.value = DataState.data(
+                    data = MainViewState(
+                        blogPosts = response.body
+                    )
+                )
 
-                            is ApiErrorResponse -> {
-                                value = DataState.error(
-                                    message = apiResponse.errorMessage
-                                )
-                            }
-
-                            is ApiEmptyResponse -> {
-                                value = DataState.error(
-                                    message = "HTTP 204. Returned Nothing!"
-                                )
-                            }
-
-                        }
-                    }
-                }
             }
+
+            override fun createCall(): LiveData<GenericApiResponse<List<BlogPost>>> {
+
+                return RetrofitBuilder.apiService.getBlogPosts()
+
+            }
+
+        }.asLiveData()
+
     }
 
     fun getUser(userId: String): LiveData<DataState<MainViewState>> {
 
-        return Transformations
-            .switchMap(RetrofitBuilder.apiService.getUser(userId)) { apiResponse ->
+        return object : NetworkBoundResource<User, MainViewState>() {
 
-                object : LiveData<DataState<MainViewState>>() {
-                    override fun onActive() {
-                        super.onActive()
-                        when (apiResponse) {
+            override fun handleApiSuccessResponse(response: ApiSuccessResponse<User>) {
 
-                            is ApiSuccessResponse -> {
-                                value = DataState.data(
-                                    data = MainViewState(
-                                        user = apiResponse.body
-                                    )
-                                )
-                            }
+                result.value = DataState.data(
+                    data = MainViewState(
+                        user = response.body
+                    )
+                )
 
-                            is ApiErrorResponse -> {
-                                value = DataState.error(
-                                    message = apiResponse.errorMessage
-                                )
-                            }
-
-                            is ApiEmptyResponse -> {
-                                value = DataState.error(
-                                    message = "HTTP 204. Returned Nothing!"
-                                )
-                            }
-
-                        }
-                    }
-                }
             }
+
+            override fun createCall(): LiveData<GenericApiResponse<User>> {
+
+                return RetrofitBuilder.apiService.getUser(userId)
+
+            }
+
+        }.asLiveData()
+
     }
 
 }

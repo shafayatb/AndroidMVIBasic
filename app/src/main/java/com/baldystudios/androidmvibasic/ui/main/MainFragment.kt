@@ -46,18 +46,25 @@ class MainFragment : Fragment() {
             // handle loading and message
             dataStateListener.onDataStateChange(dataState)
 
-            dataState.data?.let {mainViewState->
-                mainViewState.blogPosts?.let { blogPosts ->
+            dataState.data?.let { event ->
 
-                    viewModel.setBlogListData(blogPosts)
+                event.getContentIfNotHandled()?.let { mainViewState ->
+
+                    mainViewState.blogPosts?.let { blogPosts ->
+
+                        viewModel.setBlogListData(blogPosts)
+
+                    }
+
+                    mainViewState.user?.let { user ->
+
+                        viewModel.setUser(user)
+
+                    }
 
                 }
 
-                mainViewState.user?.let { user ->
 
-                    viewModel.setUser(user)
-
-                }
             }
 
         })
@@ -77,7 +84,6 @@ class MainFragment : Fragment() {
             }
 
         })
-
 
 
     }
@@ -113,7 +119,7 @@ class MainFragment : Fragment() {
 
         try {
             dataStateListener = context as DataStateListener
-        }catch (e: ClassCastException){
+        } catch (e: ClassCastException) {
             println("DEBUG: $context must implement DataStateListener")
         }
 

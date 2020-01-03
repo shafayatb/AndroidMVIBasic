@@ -39,14 +39,19 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun handleDataStateChange(dataState: DataState<*>?) {
-        dataState?.let {
+        dataState?.let { it ->
 
             //handle loading
             showProgressBar(it.loading)
 
             //handle message
-            it.message?.let { message ->
-                showToast(message)
+            dataState.message?.let { event ->
+
+                event.getContentIfNotHandled()?.let { message ->
+
+                    showToast(message)
+
+                }
             }
         }
     }

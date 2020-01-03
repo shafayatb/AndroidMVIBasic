@@ -6,16 +6,21 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.baldystudios.androidmvibasic.R
 import com.baldystudios.androidmvibasic.ui.DataStateListener
 import com.baldystudios.androidmvibasic.ui.main.state.MainStateEvent.GetBlogPostsEvent
 import com.baldystudios.androidmvibasic.ui.main.state.MainStateEvent.GetUserEvent
+import com.baldystudios.androidmvibasic.util.TopSpacingItemDecoration
+import kotlinx.android.synthetic.main.fragment_main.*
 
 class MainFragment : Fragment() {
 
     lateinit var viewModel: MainViewModel
 
     lateinit var dataStateListener: DataStateListener
+
+    lateinit var mainRecyclerAdapter: MainRecyclerAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,6 +39,36 @@ class MainFragment : Fragment() {
         } ?: throw Exception("Invalid Activity")
 
         subscribeObservers()
+        initRecyclerView()
+
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.main_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when (item.itemId) {
+
+            R.id.action_get_user -> triggerGetUserEvent()
+
+            R.id.action_get_blogs -> triggerGetBlogsEvent()
+
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        try {
+            dataStateListener = context as DataStateListener
+        } catch (e: ClassCastException) {
+            println("DEBUG: $context must implement DataStateListener")
+        }
 
     }
 
@@ -73,6 +108,7 @@ class MainFragment : Fragment() {
 
             viewState.blogPosts?.let {
 
+                mainRecyclerAdapter.submitList(it)
                 println("DEBUG: Setting blog posts to RecyclerView: $it")
 
             }
@@ -88,22 +124,14 @@ class MainFragment : Fragment() {
 
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.main_menu, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        when (item.itemId) {
-
-            R.id.action_get_user -> triggerGetUserEvent()
-
-            R.id.action_get_blogs -> triggerGetBlogsEvent()
-
+    private fun initRecyclerView() {
+        recycler_view.apply {
+            layoutManager = LinearLayoutManager(activity)
+            val topSpacingItemDecoration = TopSpacingItemDecoration(30)
+            addItemDecoration(topSpacingItemDecoration)
+            mainRecyclerAdapter = MainRecyclerAdapter()
+            adapter = mainRecyclerAdapter
         }
-
-        return super.onOptionsItemSelected(item)
     }
 
     private fun triggerGetBlogsEvent() {
@@ -114,15 +142,5 @@ class MainFragment : Fragment() {
         viewModel.setStateEvent(GetUserEvent("1"))
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-        try {
-            dataStateListener = context as DataStateListener
-        } catch (e: ClassCastException) {
-            println("DEBUG: $context must implement DataStateListener")
-        }
-
-    }
 
 }

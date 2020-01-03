@@ -8,10 +8,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.baldystudios.androidmvibasic.R
+import com.baldystudios.androidmvibasic.model.User
 import com.baldystudios.androidmvibasic.ui.DataStateListener
 import com.baldystudios.androidmvibasic.ui.main.state.MainStateEvent.GetBlogPostsEvent
 import com.baldystudios.androidmvibasic.ui.main.state.MainStateEvent.GetUserEvent
 import com.baldystudios.androidmvibasic.util.TopSpacingItemDecoration
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_main.*
 
 class MainFragment : Fragment() {
@@ -115,12 +117,26 @@ class MainFragment : Fragment() {
 
             viewState.user?.let {
 
+                setUserProperties(it)
                 println("DEBUG: Setting user data: $it")
 
             }
 
         })
 
+
+    }
+
+    private fun setUserProperties(user: User) {
+
+        email.text = user.email
+        username.text = user.username
+
+        view?.let {
+            Glide.with(it.context)
+                .load(user.image)
+                .into(image)
+        }
 
     }
 
